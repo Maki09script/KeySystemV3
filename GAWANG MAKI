@@ -122,7 +122,7 @@ submitBtn.BorderSizePixel = 0
 submitBtn.Parent = frame
 
 -- Key Validation
-local validKey = "MAKI123" -- Change your key here
+local validKey = "MADILIM-Gawang-Maki-Version-Two-UPDATED" -- Change your key here
 
 submitBtn.MouseButton1Click:Connect(function()
     local enteredKey = textBox.Text

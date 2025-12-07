@@ -1,0 +1,137 @@
+--// Key System Script (Final Clean Version)
+-- Place this inside a ScreenGui in StarterGui
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Create GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "KeySystemGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = playerGui
+
+-- Main Frame
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 150)
+frame.Position = UDim2.new(0.5, -150, 0.5, -75)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
+
+-- Background Image
+local bgImage = Instance.new("ImageLabel")
+bgImage.Size = UDim2.new(1, 0, 1, 0)
+bgImage.Position = UDim2.new(0, 0, 0, 0)
+bgImage.BackgroundTransparency = 1
+bgImage.Image = "rbxassetid://118624280298875"
+bgImage.ScaleType = Enum.ScaleType.Stretch
+bgImage.Parent = frame
+
+-- Draggable functionality
+local dragging = false
+local dragInput, mousePos, framePos
+
+frame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        mousePos = input.Position
+        framePos = frame.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+frame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - mousePos
+        frame.Position = UDim2.new(framePos.X.Scale, framePos.X.Offset + delta.X,
+                                   framePos.Y.Scale, framePos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Header Image
+local headerImage = Instance.new("ImageLabel")
+headerImage.Size = UDim2.new(1, 0, 0, 40)
+headerImage.Position = UDim2.new(0, 0, 0, 0)
+headerImage.BackgroundTransparency = 1
+headerImage.Image = "rbxassetid://118624280298875"
+headerImage.ScaleType = Enum.ScaleType.Stretch
+headerImage.Parent = frame
+
+-- Header Title
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 1, 0)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.BackgroundTransparency = 1
+title.Text = "MAKI VERSION TWO"
+title.TextColor3 = Color3.fromRGB(255, 255, 255)
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 20
+title.Parent = headerImage
+
+-- Glow animation for title (white ↔ black)
+local function glowText(label)
+    local tweenInfo = TweenInfo.new(
+        1,
+        Enum.EasingStyle.Sine,
+        Enum.EasingDirection.InOut,
+        -1,
+        true
+    )
+    local tweenGoal = {TextColor3 = Color3.fromRGB(0, 0, 0)}
+    local tween = TweenService:Create(label, tweenInfo, tweenGoal)
+    tween:Play()
+end
+glowText(title)
+
+-- TextBox (Transparent)
+local textBox = Instance.new("TextBox")
+textBox.Size = UDim2.new(0.8, 0, 0, 40)
+textBox.Position = UDim2.new(0.1, 0, 0.35, 0)
+textBox.PlaceholderText = "Enter Key Here"
+textBox.Text = ""
+textBox.ClearTextOnFocus = false
+textBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+textBox.BackgroundTransparency = 1
+textBox.BorderSizePixel = 0
+textBox.Parent = frame
+
+-- Submit Button (Black background, no glow)
+local submitBtn = Instance.new("TextButton")
+submitBtn.Size = UDim2.new(0.5, 0, 0, 35)
+submitBtn.Position = UDim2.new(0.25, 0, 0.7, 0)
+submitBtn.Text = "Submit"
+submitBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+submitBtn.Font = Enum.Font.SourceSansBold
+submitBtn.TextSize = 18
+submitBtn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+submitBtn.BorderSizePixel = 0
+submitBtn.Parent = frame
+
+-- Key Validation
+local validKey = "MAKI123" -- Change your key here
+
+submitBtn.MouseButton1Click:Connect(function()
+    local enteredKey = textBox.Text
+    if enteredKey == validKey then
+        frame:Destroy()
+        -- Run your GUI script automatically
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/Maki09script/GUI/refs/heads/main/GUI'))()
+    else
+        textBox.Text = ""
+        textBox.PlaceholderText = "Invalid Key!"
+    end
+end)
